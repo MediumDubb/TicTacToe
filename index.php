@@ -4,46 +4,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Happy Birthday Dad</title>
+    <title>Tic Tac Toe</title>
     <link rel="stylesheet" href="./style.css">
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
 </head>
 <body>
 <div class="container">
     <div class="row">
-        <div class="menu">
-            <div class="menu-wrapper">
-                <table>
-                    <tr>
-                        <th>P1: score</th>
-                        <th>P2: score</th>
-                        <th>Winner</th>
-                    </tr>
-                </table>
-            </div>
-        </div>
-        <div class="board-wrapper">
-            <table class="board">
+        <div class="menu-wrapper">
+            <table class="menu">
                 <tr>
-                    <td>a</td>
-                    <td>s</td>
-                    <td>c</td>
-                </tr>
-                <tr>
-                    <td>f</td>
-                    <td>g</td>
-                    <td>h</td>
-                </tr>
-                <tr>
-                    <td>j</td>
-                    <td>k</td>
-                    <td>l</td>
+                    <th>P1: score</th>
+                    <th>P2: score</th>
+                    <th>Winner</th>
                 </tr>
             </table>
         </div>
+        <div class="board-wrapper">
+            <form action="" method="POST">
+                <table class="board">
+                    <tr>
+                        <td><input type="hidden" id="a1"></td>
+                        <td><input type="hidden" id="a2"></td>
+                        <td><input type="hidden" id="a3"></td>
+                    </tr>
+                    <tr>
+                        <td><input type="hidden" id="b1"></td>
+                        <td><input type="hidden" id="b2"></td>
+                        <td><input type="hidden" id="b3"></td>
+                    </tr>
+                    <tr>
+                        <td><input type="hidden" id="c1"></td>
+                        <td><input type="hidden" id="c2"></td>
+                        <td><input type="hidden" id="c3"></td>
+                    </tr>
+                </table>
+            </form>
+        </div>
     </div>
 </div>
-<?php
-echo "Hello World";
-?>
+<!--
+    Set up AJAX and an Endpoint for sending game requests to.
+    keep track of board, and refresh page every couple seconds to keep board up to date.
+    Keep some kind of game room ID for keeping track of the players facing one another
+-->
+
 </body>
 </html>
