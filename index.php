@@ -11,7 +11,7 @@
 <body>
 <?php
     try {
-        $dbh = new PDO('mysql:host=localhost;dbname=tictactoe', 'root', '');
+        $dbh = new PDO('mysql:host=localhost;dbname=tictactoe', 'root', 'root');
         foreach($dbh->query('SELECT * from gameroom') as $row) {
             print_r($row);
         }
@@ -26,7 +26,6 @@
 // assign room id
 // assign player id
 // assign tictactoe character (x/o)
-
     }
 ?>
 <div class="container">
@@ -44,16 +43,60 @@
             <form action="index.php" method="POST">
                 <table class="board">
                     <?php
+                    $error = false;
+                    $x_wins = false;
+                    $o_wins = false;
+
                     for($id = 1; $id < 10; $id++){
                         if( $id === 1 || $id === 4 || $id == 7){
                            echo "<tr>";
                         }
 
-                        echo "<td><input type='text' maxlength='1' name='$id' id='$id'></td>";
+                        echo "<td><input type='text' maxlength='1' name='$id' id='$id'";
 
-//                        if (isset($_POST["submit"]) && !empty($_POST["$id"])){
-//
-//                        }
+                        if (isset($_POST["submit"]) && !empty($_POST["$id"])){
+
+                            if ($_POST["$id"] === "X" ||$_POST["$id"] === "x" || $_POST["$id"] === "O" || $_POST["$id"] === "o"){
+                                echo "value=$_POST[$id]";
+
+                                for ($r1 = 1, $r2 = 2, $r3 = 3; $r1 <= 7, $r2 <= 8, $r3 <= 9; $r1 += 3, $r2 += 3, $r3 += 3){
+                                    if ($_POST[$r1] == $_POST[$r2] && $_POST[$r2] == $_POST[$r3] ){
+                                        if ($_POST[$r1] == "X" || $_POST[$r1] == "x")
+                                        {
+                                            $x_wins = true;
+                                        } elseif ($_POST[$r1] == "O" || $_POST[$r1] == "o"){
+                                            $o_wins = true;
+                                        }
+                                    }
+                                }
+
+                                for ($c1 = 1, $c2 = 4, $c3 = 7; $c1 <= 3, $c2 <= 6, $c3 <= 9; $c1 += 1, $c2 += 1, $c3 += 1){
+                                    if ($_POST[$c1] == $_POST[$c2] && $_POST[$c2] == $_POST[$c3] ){
+                                        if ($_POST[$c1] == "X" || $_POST[$c1] == "x")
+                                        {
+                                            $x_wins = true;
+                                        } elseif ($_POST[$c1] == "O" || $_POST[$c1] == "o"){
+                                            $o_wins = true;
+                                        }
+                                    }
+                                }
+//                              Needs fixed **
+//                                for ($d1 = 1, $d2 = 5, $d3 = 9; $d1 <= 3, $d2 <= 5, $d3 <= 7; $d1 += 2, $d2 += 5, $d3 -= 2){
+//                                    if ($_POST[$d1] == $_POST[$d2] && $_POST[$d2] == $_POST[$d3] ){
+//                                        if ($_POST[$d1] == "X" || $_POST[$d1] == "x")
+//                                        {
+//                                            $x_wins = true;
+//                                        } elseif ($_POST[$d1] == "O" || $_POST[$d1] == "o"){
+//                                            $o_wins = true;
+//                                        }
+//                                    }
+//                                }
+                            }
+
+                        }
+
+                        // close
+                        echo "> </td>";
 
                         if( $id === 3 || $id === 6 || $id == 9){
                             echo "</tr>";
@@ -65,8 +108,12 @@
                 <input type="submit" name="submit" value="Draw">
 
                 <?php
-                    $error = false;
 
+                if ($x_wins === true){
+                    echo "X wins!";
+                } elseif ($o_wins === true) {
+                    echo "O wins!";
+                }
 
                 ?>
             </form>
