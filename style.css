@@ -20,10 +20,10 @@
 }
 
 .container .row .board-wrapper form{
-    border: 1px solid gray;
 }
 
 .container .row .board-wrapper form table{
+    border: 1px solid gray;
 }
 
 .container .row .board-wrapper form table tr{
@@ -33,6 +33,14 @@
     width: 150px;
     height: 150px;
     background-color: lightgrey;
+}
+
+.container .row .board-wrapper form table td input{
+    width: 150px;
+    height: 150px;
+    font-size: 150px;
+    text-align: center;
+    text-transform: uppercase;
 }
 
 .container .row .board-wrapper form table td:hover{
