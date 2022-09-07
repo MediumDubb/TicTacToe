@@ -80,21 +80,20 @@
                                         }
                                     }
                                 }
-//                              Needs fixed **
-//                                for ($d1 = 1, $d2 = 5, $d3 = 9; $d1 <= 3, $d2 <= 5, $d3 <= 7; $d1 += 2, $d2 += 5, $d3 -= 2){
-//                                    if ($_POST[$d1] == $_POST[$d2] && $_POST[$d2] == $_POST[$d3] ){
-//                                        if ($_POST[$d1] == "X" || $_POST[$d1] == "x")
-//                                        {
-//                                            $x_wins = true;
-//                                        } elseif ($_POST[$d1] == "O" || $_POST[$d1] == "o"){
-//                                            $o_wins = true;
-//                                        }
-//                                    }
-//                                }
+
+                                for ($d1 = 1, $d2 = 5, $d3 = 9; $d1 <= 3, $d2 <= 5, $d3 >= 7; $d1 += 2, $d2 += 0, $d3 -= 2){
+                                    if ($_POST[$d1] == $_POST[$d2] && $_POST[$d2] == $_POST[$d3] ){
+                                        if ($_POST[$d1] == "X" || $_POST[$d1] == "x")
+                                        {
+                                            $x_wins = true;
+                                        } elseif ($_POST[$d1] == "O" || $_POST[$d1] == "o")
+                                        {
+                                            $o_wins = true;
+                                        }
+                                    }
+                                }
                             }
-
                         }
-
                         // close
                         echo "> </td>";
 
@@ -128,6 +127,6 @@
 
     Check for a win condition or tie condition... somehow
 -->
-
+<script src="./script.js"></script>
 </body>
 </html>
