@@ -42,6 +42,9 @@
     text-align: center;
     text-transform: uppercase;
 }
+.container .row .board-wrapper form table td input:hover{
+    cursor: pointer;
+}
 
 .container .row .board-wrapper form table td:hover{
     background-color: rgba(190, 190, 190, 0.35);

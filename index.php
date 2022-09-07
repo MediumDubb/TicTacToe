@@ -40,7 +40,7 @@
             </table>
         </div>
         <div class="board-wrapper">
-            <form action="index.php" method="POST">
+            <form action="index.php" method="POST" id="tictac_board">
                 <table class="board">
                     <?php
                     $error = false;
@@ -52,9 +52,10 @@
                            echo "<tr>";
                         }
 
-                        echo "<td><input type='text' maxlength='1' name='$id' id='$id'";
+                        echo "<input id='user_char' type='hidden' value='x'>";
+                        echo "<td><input class='cell' autocomplete='false' type='text' readonly maxlength='1' name='$id' id='$id'";
 
-                        if (isset($_POST["submit"]) && !empty($_POST["$id"])){
+                        if (!empty($_POST["$id"])){
 
                             if ($_POST["$id"] === "X" ||$_POST["$id"] === "x" || $_POST["$id"] === "O" || $_POST["$id"] === "o"){
                                 echo "value=$_POST[$id]";
@@ -104,7 +105,7 @@
                     ?>
                 </table>
 
-                <input type="submit" name="submit" value="Draw">
+                <input type="submit" name="submit_btn" value="Draw">
 
                 <?php
 
