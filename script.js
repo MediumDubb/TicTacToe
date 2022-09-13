@@ -4,5 +4,4 @@ $( document ).ready(function() {
         $(e.target).val(user_char);
         $("#tictac_board").submit();
     });
-
 });
