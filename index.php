@@ -9,6 +9,13 @@
     <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
 </head>
 <body>
+
+<?php require_once('connect.php'); ?>
+<!-- can write sql statements in this file since connect.php is included-->
+
+<?php require_once('board_state.php'); ?>
+<!-- This file handles the AJAX call to the server-->
+
 <div class="container">
     <div class="row">
         <div class="menu-wrapper">
@@ -24,6 +31,7 @@
             <form action="index.php" method="POST" id="tictac_board">
                 <table class="board">
                     <?php
+
                     $error = false;
                     $x_wins = false;
                     $o_wins = false;
@@ -113,5 +121,6 @@
     Check for a win condition or tie condition... somehow
 -->
 <script src="./script.js"></script>
+
 </body>
 </html>
