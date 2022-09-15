@@ -12,9 +12,41 @@
 
 <?php require_once('connect.php'); ?>
 <!-- can write sql statements in this file since connect.php is included-->
+<?php
+    $user_id = '';
+    $player = '';
+    $room_id = '';
 
-<?php require_once('board_state.php'); ?>
-<!-- This file handles the AJAX call to the server-->
+    function random_strings($length_of_string)
+    {
+        // String of all alphanumeric character
+        $str_result = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+
+        // Shuffle the $str_result and returns substring
+        // of specified length
+        return substr(str_shuffle($str_result),
+        0, $length_of_string);
+    }
+
+    // PDO logic
+    while ($row = $selectgameroom->fetch()):
+        $room_id = htmlspecialchars($row['room_id']);
+
+        if (empty(htmlspecialchars($row['player_one_id']))) {
+            // generate random user_string as an ID
+            $user_id = random_strings(8);
+            $player = 'p1';
+            $data = [
+                'player_one_id' => $user_id,
+            ];
+            // update player_one_id column in dbb
+            $dbh->prepare($update_player_one_id)->execute($data);
+        } else {
+            $user_id = htmlspecialchars($row['player_one_id']);
+        }
+
+     endwhile;
+?>
 
 <div class="container">
     <div class="row">
@@ -36,12 +68,15 @@
                     $x_wins = false;
                     $o_wins = false;
 
+                    echo "<input id='user_char' type='hidden' value='o'>";
+                    echo "<input id='game_room' type='hidden' value="; echo $room_id; echo ">";
+                    echo "<input id='user_id' type='hidden' value=";  echo $user_id;  echo ">";
+
                     for($id = 1; $id < 10; $id++){
                         if( $id === 1 || $id === 4 || $id == 7){
                            echo "<tr>";
                         }
 
-                        echo "<input id='user_char' type='hidden' value='o'>";
                         echo "<td><input class='cell' autocomplete='false' type='text' readonly maxlength='1' name='$id' id='$id'";
 
                         if (!empty($_POST["$id"])){
