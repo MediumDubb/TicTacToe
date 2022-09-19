@@ -14,7 +14,7 @@
 <!-- can write sql statements in this file since connect.php is included-->
 <?php
     $user_id = '';
-    $player = '';
+    $player_id = '';
     $room_id = '';
 
     function random_strings($length_of_string)
@@ -28,21 +28,55 @@
         0, $length_of_string);
     }
 
-    // PDO logic
+    // Assign player ID's
     while ($row = $selectgameroom->fetch()):
         $room_id = htmlspecialchars($row['room_id']);
 
-        if (empty(htmlspecialchars($row['player_one_id']))) {
-            // generate random user_string as an ID
+        if (empty(htmlspecialchars($row['player_one_id'])) && empty(htmlspecialchars($row['player_two_id'])) && empty($player_id)) {
+            // generate random user_string as an ID for p1
             $user_id = random_strings(8);
-            $player = 'p1';
+            $player_id = 'p1';
             $data = [
                 'player_one_id' => $user_id,
             ];
             // update player_one_id column in dbb
             $dbh->prepare($update_player_one_id)->execute($data);
-        } else {
-            $user_id = htmlspecialchars($row['player_one_id']);
+
+        }
+        elseif ( !empty(htmlspecialchars($row['player_one_id'])) && empty(htmlspecialchars($row['player_two_id'])) && empty($player_id)){
+            // generate random user_string as an ID for p2
+            $user_id = random_strings(8);
+
+             if ($user_id === htmlspecialchars($row['player_one_id'])) {
+                 while ($user_id === htmlspecialchars($row['player_one_id'])) {
+                     $user_id = random_strings(8);
+                 }
+             }
+
+            $player_id = 'p2';
+            $data = [
+                'player_two_id' => $user_id,
+            ];
+
+            $dbh->prepare($update_player_two_id)->execute($data);
+        }
+
+        elseif ( empty(htmlspecialchars($row['player_one_id'])) && !empty(htmlspecialchars($row['player_two_id'])) && empty($player_id)){
+            // generate random user_string as an ID for p1 if p2 is already assigned
+            $user_id = random_strings(8);
+
+            if ($user_id === htmlspecialchars($row['player_two_id'])){
+                while ($user_id === htmlspecialchars($row['player_two_id'])){
+                    $user_id = random_strings(8);
+                }
+            }
+
+            $player_id = 'p1';
+            $data = [
+                'player_one_id' => $user_id,
+            ];
+
+            $dbh->prepare($update_player_one_id)->execute($data);
         }
 
      endwhile;
