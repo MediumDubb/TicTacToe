@@ -13,9 +13,13 @@
 <?php require_once('connect.php'); ?>
 <!-- can write sql statements in this file since connect.php is included-->
 <?php
-    $user_id = '';
+    $player_char = '';
     $player_id = '';
     $room_id = '';
+
+    if ( isset($_COOKIE['tictactoe_user'])){
+        $player_id = $_COOKIE['tictactoe_user'];
+    }
 
     function random_strings($length_of_string)
     {
@@ -32,51 +36,55 @@
     while ($row = $selectgameroom->fetch()):
         $room_id = htmlspecialchars($row['room_id']);
 
-        if (empty(htmlspecialchars($row['player_one_id'])) && empty(htmlspecialchars($row['player_two_id'])) && empty($player_id)) {
-            // generate random user_string as an ID for p1
-            $user_id = random_strings(8);
-            $player_id = 'p1';
-            $data = [
-                'player_one_id' => $user_id,
-            ];
-            // update player_one_id column in dbb
-            $dbh->prepare($update_player_one_id)->execute($data);
+        if (!isset($_COOKIE['tictactoe_user'])){
+            if (empty(htmlspecialchars($row['player_one_id'])) && empty(htmlspecialchars($row['player_two_id'])) && empty($player_id) ) {
+                // generate random user_string as an ID for p1
+                $player_id = random_strings(8);
+                setcookie( "tictactoe_user", $player_id, strtotime( '+30 days' ) );
 
-        }
-        elseif ( !empty(htmlspecialchars($row['player_one_id'])) && empty(htmlspecialchars($row['player_two_id'])) && empty($player_id)){
-            // generate random user_string as an ID for p2
-            $user_id = random_strings(8);
+                $data = [
+                    'player_one_id' => $player_id,
+                    'x' => $player_id,
+                ];
 
-             if ($user_id === htmlspecialchars($row['player_one_id'])) {
-                 while ($user_id === htmlspecialchars($row['player_one_id'])) {
-                     $user_id = random_strings(8);
-                 }
-             }
-
-            $player_id = 'p2';
-            $data = [
-                'player_two_id' => $user_id,
-            ];
-
-            $dbh->prepare($update_player_two_id)->execute($data);
-        }
-
-        elseif ( empty(htmlspecialchars($row['player_one_id'])) && !empty(htmlspecialchars($row['player_two_id'])) && empty($player_id)){
-            // generate random user_string as an ID for p1 if p2 is already assigned
-            $user_id = random_strings(8);
-
-            if ($user_id === htmlspecialchars($row['player_two_id'])){
-                while ($user_id === htmlspecialchars($row['player_two_id'])){
-                    $user_id = random_strings(8);
-                }
+                // update player_one_id column in dbh
+                $dbh->prepare($update_player_one_id)->execute($data);
             }
+            elseif ( !empty(htmlspecialchars($row['player_one_id'])) && empty(htmlspecialchars($row['player_two_id'])) && empty($player_id) ){
+                // generate random user_string as an ID for p2
+                $player_id = random_strings(8);
+                setcookie( "tictactoe_user", $player_id, strtotime( '+30 days' ) );
 
-            $player_id = 'p1';
-            $data = [
-                'player_one_id' => $user_id,
-            ];
+                if ($player_id === htmlspecialchars($row['player_one_id'])) {
+                    while ($player_id === htmlspecialchars($row['player_one_id'])) {
+                        $player_id = random_strings(8);
+                    }
+                }
 
-            $dbh->prepare($update_player_one_id)->execute($data);
+                $data = [
+                    'player_two_id' => $player_id,
+                    'o' => $player_id,
+                ];
+
+                $dbh->prepare($update_player_two_id)->execute($data);
+            }
+            elseif ( empty(htmlspecialchars($row['player_one_id'])) && !empty(htmlspecialchars($row['player_two_id'])) && empty($player_id) ){
+                // generate random user_string as an ID for p1 if p2 is already assigned
+                $player_id = random_strings(8);
+                setcookie( "tictactoe_user", $player_id, strtotime( '+30 days' ) );
+
+                if ($player_id === htmlspecialchars($row['player_two_id'])){
+                    while ($player_id === htmlspecialchars($row['player_two_id'])){
+                        $player_id = random_strings(8);
+                    }
+                }
+
+                $data = [
+                    'player_one_id' => $player_id,
+                ];
+
+                $dbh->prepare($update_player_one_id)->execute($data);
+            }
         }
 
      endwhile;
@@ -102,9 +110,9 @@
                     $x_wins = false;
                     $o_wins = false;
 
-                    echo "<input id='user_char' type='hidden' value='o'>";
-                    echo "<input id='game_room' type='hidden' value="; echo $room_id; echo ">";
-                    echo "<input id='user_id' type='hidden' value=";  echo $user_id;  echo ">";
+                    echo "<input id='user_char' type='hidden' value=''>";
+                    echo "<input id='game_room' type='hidden' value='$room_id'>";
+                    echo "<input id='user_id' type='hidden' value='$player_id'>";
 
                     for($id = 1; $id < 10; $id++){
                         if( $id === 1 || $id === 4 || $id == 7){

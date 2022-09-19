@@ -5,9 +5,9 @@ try {
 
     $selectgameroom = $dbh->query('SELECT * from gameroom');
 
-    $update_player_one_id = 'UPDATE gameroom SET player_one_id=:player_one_id';
+    $update_player_one_id = 'UPDATE gameroom SET player_one_id=:player_one_id, x=:x';
 // player two sql statement
-//    $update_player_two_id = 'UPDATE gameroom SET player_two_id=:player_teo_id';
+    $update_player_two_id = 'UPDATE gameroom SET player_two_id=:player_two_id, o=:o';
 
 // add new row to table if row before is full, assign two players
 //    $update_player_one_id = 'INSERT INTO gameroom (player_one_id) VALUES (:player_one_id)';
