@@ -1,18 +1,17 @@
 <?php
 require_once('connect.php');
 
-$selectgameroom = $dbh->query('SELECT * from game_room');
+$select_game_room = $dbh->query('SELECT * from game_room');
 
-$selectgameroom->setFetchMode(PDO::FETCH_ASSOC);
+$select_game_room->setFetchMode(PDO::FETCH_ASSOC);
 
-// init game room id
-$init_guid = 'INSERT INTO game_room (guid) VALUES (UUID_TO_BIN(UUID()))';
-// init game room id
+
+// init game room secret word
 $secret_word = 'UPDATE secret_word SET guid=:secret_word';
 // player one sql statement
-$init_player_one = 'UPDATE game_room SET user_one_id=:user_one_id';
+$init_player_one = 'INSERT INTO game_room (user_one_id) VALUES (UUID())';
 // player two sql statement
-$init_player_two = 'UPDATE game_room SET user_two_id=:user_two_id';
+$init_player_two = 'INSERT INTO game_room (user_two_id) VALUES (UUID())';
 // choose current player
 $init_current_player = 'UPDATE game_room SET current_player=:current_player';
 //update table data
@@ -23,7 +22,7 @@ $update_turn = 'UPDATE game_room SET turn_over=:turn_over';
 $create_room = 'INSERT INTO game_room (user_one_id, current_player) VALUES (:user_one_id,:current_player)';
 
 // assign room and players
-$row = $selectgameroom->fetch();
+$row = $select_game_room->fetch();
 
 $room_id = '';
 $player_id = '';
@@ -33,4 +32,6 @@ $data = [
 ];
 
 //$dbh->prepare($init_player_one)->execute($data);
+$dbh->prepare($init_player_one)->execute();
 
+var_dump($row);
