@@ -27,12 +27,12 @@ $board_array = [
         <div class="menu-wrapper">
             <table class="menu">
                 <tr>
-                    <th>Winner</th>
+                    <th class="message"></th>
                 </tr>
             </table>
         </div>
         <div class="board-wrapper">
-            <form action="" method="POST" id="tictac_board">
+            <form action="" method="POST" id="tictac_board" class="d-invisible">
                 <table class="board">
                     <?php
 
@@ -57,15 +57,17 @@ $board_array = [
         </div>
     </div>
 </div>
-<div class="">
-    <div class="">
-        <form action="">
-            <label for="secret_word"> Create Room
-                <input id="secret_word" name="secret_word" type="text" placeholder="create secret word">
+<div class="init-room">
+    <div class="init-room-wrapper">
+        <form id="init-room-form" action="">
+            <h2>Tic Tac Toe</h2>
+            <label for="secret_word"> Create Room:
+                <input id="secret_word" name="secret_word" type="text" placeholder="&nbsp;create secret word">
             </label>
-            <label for="join_room"> Join Room
-                <input id="join_room" name="join_room" type="text" placeholder="provide secret word">
+            <label for="join_room" class=""> Join Room:
+                <input id="join_room" name="join_room" type="text" placeholder="&nbsp;provide secret word">
             </label>
+            <input type="submit" value="start" disabled>
         </form>
     </div>
 </div>
