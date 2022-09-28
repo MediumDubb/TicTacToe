@@ -10,7 +10,7 @@
 </head>
 <body>
 
-<?php require_once('sql_logic.php'); ?>
+<?php require_once('database/connect.php'); ?>
 <!-- can write sql statements in this file since connect.php is included-->
 <?php
 $error = false;

@@ -1,10 +1,15 @@
 <?php
-require_once('connect.php');
+
+try {
+    $dbh = new PDO('mysql:host=localhost;dbname=tictactoe', 'root', 'root');
+} catch (PDOException $e) {
+    print "Error!: " . $e->getMessage() . "<br/>";
+    die();
+}
 
 $select_game_room = $dbh->query('SELECT BIN_TO_UUID(user_one_id), BIN_TO_UUID(user_two_id), id, secret_word, table_data, current_player, turn_over from game_room');
 
 $select_game_room->setFetchMode(PDO::FETCH_ASSOC);
-
 
 // init game room secret word
 $secret_word = 'UPDATE secret_word SET guid=:secret_word';
@@ -34,3 +39,4 @@ $data = [
 //$dbh->prepare($init_player_one)->execute($data);
 
 var_dump($row);
+

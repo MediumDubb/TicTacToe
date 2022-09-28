@@ -10,4 +10,10 @@ $( document ).ready(function() {
         $("#init-room-form input[type='submit']").val(buttonText.slice(0, buttonText.indexOf(':')));
         $("#init-room-form input[type='submit']").prop("disabled", false);
     })
+
+    $("#init-room-form input").submit( (e) => {
+        e.target.forEach( (val) => {
+
+        });
+    })
 });
