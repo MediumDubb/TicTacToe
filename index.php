@@ -68,6 +68,7 @@ $board_array = [
                 <input id="join_room" name="join_room" type="text" placeholder="&nbsp;provide secret word">
             </label>
             <input type="submit" value="start" disabled>
+            <div class="err"></div>
         </form>
     </div>
 </div>
