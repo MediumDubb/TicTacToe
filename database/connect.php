@@ -38,5 +38,3 @@ $data = [
 
 //$dbh->prepare($init_player_one)->execute($data);
 
-var_dump($row);
-

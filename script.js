@@ -37,15 +37,19 @@ $( document ).ready(function() {
         }
 
         if (input_value && field_type !== '') {
-            $.ajax({
+            let request = $.ajax({
                 method: "POST",
                 url: 'api/' + field_type + '.php',
                 data: {'room_name': input_value},
-                success: function() {
-                    console.log("success");
-                }
-            }).done(function() {
-                console.log('done');
+                dataType: 'json'
+            });
+
+            request.done( function ( result ) {
+                console.log('done. ' + result);
+            });
+
+            request.fail( function (iqXHR, status) {
+                alert("Request Failed:" + status);
             });
         }
     })
