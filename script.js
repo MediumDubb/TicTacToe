@@ -5,10 +5,13 @@ $( document ).ready(function() {
         $("#tictac_board").submit();
     });
 
-    $("#init-room-form input").click( (e) => {
+    $("#init-room-form input[type='text']").click( (e) => {
         let buttonText = e.target.labels[0].outerText;
+
         $("#init-room-form input[type='submit']").val(buttonText.slice(0, buttonText.indexOf(':')));
         $("#init-room-form input[type='submit']").prop("disabled", false);
+
+
         $("#init-room-form")[0].reset();
     })
 
@@ -16,7 +19,7 @@ $( document ).ready(function() {
         e.preventDefault();
         let elements = e.target.length;
         let field_type = '';
-        let input_value = false;
+        let input_value = '';
 
         // grab the value of the filled out field and set the field type to the corresponding php file name
         for (let i = 0; i < elements; i++) {
@@ -40,12 +43,12 @@ $( document ).ready(function() {
             let request = $.ajax({
                 method: "POST",
                 url: 'api/' + field_type + '.php',
-                data: {'room_name': input_value},
+                data: {'secret_word': input_value},
                 dataType: 'json'
             });
 
             request.done( function ( result ) {
-                console.log('done. ' + result);
+                console.log('done. ' + result.secret_word);
             });
 
             request.fail( function (iqXHR, status) {
