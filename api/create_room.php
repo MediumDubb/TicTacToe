@@ -10,21 +10,23 @@ $submission = $_REQUEST;
 $select_game_room = '';
 
 $secret_word = 'INSERT INTO game_room (secret_word) VALUES (:secret_word)';
+$grab_room = $dbh->prepare("SELECT * FROM game_room WHERE secret_word ='" . $submission['secret_word']. "'");
 
-
-
-
-if ( isset($submission['secret_word']) ){
+if ( isset($submission['secret_word']) ) {
     $data = [
         'secret_word' => $submission['secret_word']
     ];
 
     $dbh->prepare($secret_word)->execute($data);
 
-    $sql = "SELECT id FROM game_room WHERE secret_word = '" . $submission['secret_word'] . "';";
-    $objQuery = $dbh->query($sql);
-    $objQuery->setFetchMode(PDO::FETCH_ASSOC);
-    $row = $objQuery->fetch();
+    $grab_room->execute();
+    $result = $grab_room->setFetchMode(PDO::FETCH_ASSOC);
 
-    echo json_encode($row);
+    if ($result) {
+        $assoc_array = $grab_room->fetch();
+        echo json_encode($assoc_array);
+    } else {
+        echo json_encode(['Error' => 'Room not created']);
+    }
 }
+

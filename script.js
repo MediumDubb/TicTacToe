@@ -10,8 +10,6 @@ $( document ).ready(function() {
 
         $("#init-room-form input[type='submit']").val(buttonText.slice(0, buttonText.indexOf(':')));
         $("#init-room-form input[type='submit']").prop("disabled", false);
-
-
         $("#init-room-form")[0].reset();
     })
 
@@ -48,7 +46,7 @@ $( document ).ready(function() {
             });
 
             request.done( function ( result ) {
-                console.log('done. ' + result.secret_word);
+                console.log('done. ' + result);
             });
 
             request.fail( function (iqXHR, status) {
