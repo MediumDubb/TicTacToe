@@ -5,12 +5,16 @@ $( document ).ready(function() {
         $("#tictac_board").submit();
     });
 
-    $("#init-room-form input[type='text']").click( (e) => {
+    $("#init-room-form input[type='text']").click( function(e) {
         let buttonText = e.target.labels[0].outerText;
 
         $("#init-room-form input[type='submit']").val(buttonText.slice(0, buttonText.indexOf(':')));
         $("#init-room-form input[type='submit']").prop("disabled", false);
-        $("#init-room-form")[0].reset();
+
+        // check if the user clicked on the same input, if not then reset the form
+        if ($("#init-room-form input[type='text']")[0] !== this) {
+            $("#init-room-form")[0].reset();
+        }
     })
 
     $("#init-room-form").submit( (e) => {
@@ -26,10 +30,12 @@ $( document ).ready(function() {
                     input_value = $(e.target[i]).val();
 
                     if ( i === 0){
+                        // first input box is for create_room
                         field_type = 'create_room'
                     }
 
                     if ( i === 1){
+                        //second input box is for join_room
                         field_type = 'join_room'
                     }
 
@@ -47,6 +53,9 @@ $( document ).ready(function() {
 
             request.done( function ( result ) {
                 console.log('done. ' + result);
+                if ( result.error ){
+                    $(".init-room .err p").innerText(result.error);
+                }
             });
 
             request.fail( function (iqXHR, status) {

@@ -7,9 +7,7 @@ require_once('../database/connect.php');
 
 $submission = $_REQUEST;
 
-$select_game_room = '';
-
-$secret_word = 'INSERT INTO game_room (secret_word) VALUES (:secret_word)';
+$generate_room = 'INSERT INTO game_room (secret_word, user_one_id) VALUES (:secret_word, (SELECT UUID()))';
 $grab_room = $dbh->prepare("SELECT * FROM game_room WHERE secret_word ='" . $submission['secret_word']. "'");
 
 if ( isset($submission['secret_word']) ) {
@@ -17,7 +15,7 @@ if ( isset($submission['secret_word']) ) {
         'secret_word' => $submission['secret_word']
     ];
 
-    $dbh->prepare($secret_word)->execute($data);
+    $dbh->prepare($generate_room)->execute($data);
 
     $grab_room->execute();
     $result = $grab_room->setFetchMode(PDO::FETCH_ASSOC);
@@ -26,7 +24,7 @@ if ( isset($submission['secret_word']) ) {
         $assoc_array = $grab_room->fetch();
         echo json_encode($assoc_array);
     } else {
-        echo json_encode(['Error' => 'Room not created']);
+        echo json_encode(['error' => 'Room not created']);
     }
 }
 
