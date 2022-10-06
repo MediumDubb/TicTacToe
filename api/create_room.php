@@ -7,24 +7,33 @@ require_once('../database/connect.php');
 
 $submission = $_REQUEST;
 
+$check_room = $dbh->prepare("SELECT COUNT(*) FROM game_room WHERE secret_word ='" . $submission['secret_word']. "'");
 $generate_room = 'INSERT INTO game_room (secret_word, user_one_id) VALUES (:secret_word, (SELECT UUID()))';
 $grab_room = $dbh->prepare("SELECT * FROM game_room WHERE secret_word ='" . $submission['secret_word']. "'");
 
 if ( isset($submission['secret_word']) ) {
-    $data = [
-        'secret_word' => $submission['secret_word']
-    ];
 
-    $dbh->prepare($generate_room)->execute($data);
+    //check for duplicate secret room word
+    $check_room->execute();
+    $check = $check_room->setFetchMode(PDO::FETCH_ASSOC);
+    $rows = $check_room->fetchColumn(0);
 
-    $grab_room->execute();
-    $result = $grab_room->setFetchMode(PDO::FETCH_ASSOC);
-
-    if ($result) {
-        $assoc_array = $grab_room->fetch();
-        echo json_encode($assoc_array);
+    if ( $rows > 0){
+        echo json_encode(['error' => 'Room Exists']);
     } else {
-        echo json_encode(['error' => 'Room not created']);
+        $data = [
+            'secret_word' => $submission['secret_word']
+        ];
+
+        // generate the room row
+        $dbh->prepare($generate_room)->execute($data);
+
+        // fetch newly created row
+        $grab_room->execute();
+        $room = $grab_room->setFetchMode(PDO::FETCH_ASSOC);
+        $assoc_array = $grab_room->fetch();
+
+        echo json_encode($assoc_array);
     }
 }
 

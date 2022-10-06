@@ -64,11 +64,12 @@ $board_array = [
             <label for="secret_word"> Create Room:
                 <input id="secret_word" name="secret_word" type="text" placeholder="&nbsp;create secret word">
             </label>
+            <div class="err"><p></p></div>
             <label for="join_room" class=""> Join Room:
                 <input id="join_room" name="join_room" type="text" placeholder="&nbsp;provide secret word">
             </label>
             <input type="submit" value="start" disabled>
-            <div class="err"></div>
+
         </form>
     </div>
 </div>

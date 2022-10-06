@@ -54,8 +54,22 @@ $( document ).ready(function() {
             request.done( function ( result ) {
                 console.log('done. ' + result);
                 if ( result.error ){
-                    $(".init-room .err p").innerText(result.error);
+                    // return error result (duplicate secret word)
+                    $(".init-room .err p").text(result.error);
+                } else {
+                    // handle setting up new game room (add query params to current path, remove overhang form)
+                    let newurl = window.location.protocol +
+                        "//" +
+                        window.location.host + window.location.pathname +
+                        "?room=" +
+                        result.id +
+                        "&user_id=" +
+                        result.user_one_id;
+                    window.history.pushState({path:newurl},'',newurl);
+                    $("div.init-room").hide();
+                    $("#tictac_board").removeClass("d-invisible");
                 }
+
             });
 
             request.fail( function (iqXHR, status) {
