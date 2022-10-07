@@ -32,6 +32,7 @@ if ( isset($submission['secret_word']) ) {
         $grab_room->execute();
         $room = $grab_room->setFetchMode(PDO::FETCH_ASSOC);
         $assoc_array = $grab_room->fetch();
+        $assoc_array += ['char' => 'x'];
 
         echo json_encode($assoc_array);
     }

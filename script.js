@@ -1,8 +1,15 @@
 $( document ).ready(function() {
-    let user_char = $('#user_char').val().toLowerCase();
+    const err_create = $(".init-room .err.creat-room p");
+    const err_join = $(".init-room .err.no-room p");
+
     $("input.cell").click((e) => {
+        let user_char = $('#user_char').val().toLowerCase();
+
         $(e.target).val(user_char);
-        $("#tictac_board").submit();
+        $("#tictac_board").submit( (e) => {
+            e.preventDefault();
+            let $board_inputs = $("#tictac_board input[type='text']");
+        });
     });
 
     $("#init-room-form input[type='text']").click( function(e) {
@@ -11,9 +18,11 @@ $( document ).ready(function() {
         $("#init-room-form input[type='submit']").val(buttonText.slice(0, buttonText.indexOf(':')));
         $("#init-room-form input[type='submit']").prop("disabled", false);
 
-        // check if the user clicked on the same input, if not then reset the form
-        if ($("#init-room-form input[type='text']")[0] !== this) {
+        // check if the user clicked on the same input after entering a value, if not then reset the form and err msg's
+        if ( $(this).val() === '' ) {
             $("#init-room-form")[0].reset();
+            err_create.text('');
+            err_join.text('');
         }
     })
 
@@ -43,7 +52,7 @@ $( document ).ready(function() {
             }
         }
 
-        if (input_value && field_type !== '') {
+        if (input_value && field_type === 'create_room') {
             let request = $.ajax({
                 method: "POST",
                 url: 'api/' + field_type + '.php',
@@ -55,7 +64,7 @@ $( document ).ready(function() {
                 console.log('done. ' + result);
                 if ( result.error ){
                     // return error result (duplicate secret word)
-                    $(".init-room .err p").text(result.error);
+                    err_create.text(result.error);
                 } else {
                     // handle setting up new game room (add query params to current path, remove overhang form)
                     let newurl = window.location.protocol +
@@ -66,6 +75,42 @@ $( document ).ready(function() {
                         "&user_id=" +
                         result.user_one_id;
                     window.history.pushState({path:newurl},'',newurl);
+                    $('#user_char').val(result.char);
+                    $("div.init-room").hide();
+                    $("#tictac_board").removeClass("d-invisible");
+                }
+
+            });
+
+            request.fail( function (iqXHR, status) {
+                alert("Request Failed:" + status);
+            });
+        }
+
+        if (input_value && field_type === 'join_room') {
+            let request = $.ajax({
+                method: "POST",
+                url: 'api/' + field_type + '.php',
+                data: {'secret_word': input_value},
+                dataType: 'json'
+            });
+
+            request.done( function ( result ) {
+                console.log('done. ' + result);
+                if ( result.error ){
+                    // return error result (duplicate secret word)
+                    err_join.text(result.error);
+                } else {
+                    // handle setting up new game room (add query params to current path, remove overhang form)
+                    let newurl = window.location.protocol +
+                        "//" +
+                        window.location.host + window.location.pathname +
+                        "?room=" +
+                        result.id +
+                        "&user_id=" +
+                        result.user_two_id;
+                    window.history.pushState({path:newurl},'',newurl);
+                    $('#user_char').val(result.char);
                     $("div.init-room").hide();
                     $("#tictac_board").removeClass("d-invisible");
                 }
