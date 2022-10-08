@@ -1,7 +1,10 @@
 $( document ).ready(function() {
     const err_create = $(".init-room .err.creat-room p");
     const err_join = $(".init-room .err.no-room p");
+    let init_form = $("div.init-room");
+    let tictactoe_board = $("#tictac_board");
 
+    // Board logic
     $("input.cell").click((e) => {
         let user_char = $('#user_char').val().toLowerCase();
 
@@ -12,6 +15,7 @@ $( document ).ready(function() {
         });
     });
 
+    // init form create/join change submit button text
     $("#init-room-form input[type='text']").click( function(e) {
         let buttonText = e.target.labels[0].outerText;
 
@@ -26,6 +30,7 @@ $( document ).ready(function() {
         }
     })
 
+    // submitting create/join form
     $("#init-room-form").submit( (e) => {
         e.preventDefault();
         let elements = e.target.length;
@@ -76,8 +81,8 @@ $( document ).ready(function() {
                         result.user_one_id;
                     window.history.pushState({path:newurl},'',newurl);
                     $('#user_char').val(result.char);
-                    $("div.init-room").hide();
-                    $("#tictac_board").removeClass("d-invisible");
+                    init_form.hide();
+                    tictactoe_board.removeClass("d-invisible");
                 }
 
             });
@@ -111,8 +116,8 @@ $( document ).ready(function() {
                         result.user_two_id;
                     window.history.pushState({path:newurl},'',newurl);
                     $('#user_char').val(result.char);
-                    $("div.init-room").hide();
-                    $("#tictac_board").removeClass("d-invisible");
+                    init_form.hide();
+                    tictactoe_board.removeClass("d-invisible");
                 }
 
             });

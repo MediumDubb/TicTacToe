@@ -8,6 +8,7 @@ require_once('../database/connect.php');
 $submission = $_REQUEST;
 
 $check_room = $dbh->prepare("SELECT COUNT(*) FROM game_room WHERE secret_word ='" . $submission['secret_word']. "'");
+$check_p2_id = $dbh->prepare("SELECT user_two_id FROM game_room WHERE secret_word ='" . $submission['secret_word']. "'");
 $generate_user_two = "UPDATE game_room SET user_two_id = (SELECT UUID()) WHERE secret_word ='" . $submission['secret_word'] . "'";
 $grab_room = $dbh->prepare("SELECT * FROM game_room WHERE secret_word ='" . $submission['secret_word']. "'");
 
@@ -18,8 +19,19 @@ if ( isset($submission['secret_word']) ) {
     $check = $check_room->setFetchMode(PDO::FETCH_ASSOC);
     $rows = $check_room->fetchColumn(0);
 
-    if ( $rows < 1 ){
-        echo json_encode(['error' => 'Room Doesn\'t Exist']);
+    // check for user_two_id
+    $check_p2_id->execute();
+    $check = $check_p2_id->setFetchMode(PDO::FETCH_ASSOC);
+    $value = $check_p2_id->fetchColumn(0);
+
+    if ( $rows < 1 || !empty($value) ){
+
+        if( $rows < 1){
+            echo json_encode(['error' => 'Room Doesn\'t Exist']);
+        } elseif ( !empty($value) ) {
+            echo json_encode(['error' => 'Room is Full']);
+        }
+
     } else {
         // generate the room row
         $dbh->prepare($generate_user_two)->execute();
