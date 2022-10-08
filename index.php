@@ -36,9 +36,9 @@ $board_array = [
                 <table class="board">
                     <?php
 
-                    echo "<input id='user_char' type='hidden' value='x'>";
-                    echo "<input id='game_room' type='hidden' value='1'>";
-                    echo "<input id='user_id' type='hidden' value='1'>";
+                    echo "<input id='user_char' type='hidden' value=''>";
+                    echo "<input id='game_room' type='hidden' value=''>";
+                    echo "<input id='user_id' type='hidden' value=''>";
 
                     for($id = 1; $id < 10; $id++){
                         if( $id === 1 || $id === 4 || $id == 7){
@@ -82,7 +82,51 @@ $board_array = [
 
     Check for a win condition or tie condition... somehow
 -->
+
 <script src="./script.js"></script>
+
+<?php
+// crappy way to get some user data back if page is refreshed unexpectedly...
+// maybe thinking about savin remote ip in db so I can refer to that incase the url gets wiped and a user re joins an open/unfinshed game
+if (isset($_GET['room_id']) && isset($_GET['user_id'])){
+    ?>
+    <script>
+        $( document ).ready(function() {
+
+            reconnect('<?php echo $_GET['room_id']; ?>', '<?php echo $_GET['user_id']; ?>');
+
+            function reconnect(room_id, user_id) {
+                let request = $.ajax({
+                    method: "POST",
+                    url: 'api/reconnect.php',
+                    data: {'room_id': room_id, 'user_id': user_id},
+                    dataType: 'json'
+                });
+
+                request.done( function ( result ) {
+                    console.log('done. ' + result);
+                    if ( result.error ){
+                        // return error result (duplicate secret word)
+                        alert(result.error);
+                    } else {
+                        // handle setting up new game room (remove overhang form, show board)
+
+                        $('#user_char').val(result.char);
+                        $("div.init-room").hide();
+                        $("#tictac_board").removeClass("d-invisible");
+                    }
+
+                });
+
+                request.fail( function (iqXHR, status) {
+                    alert("Request Failed:" + status);
+                });
+            }
+        });
+    </script>
+    <?php
+}
+?>
 
 </body>
 </html>

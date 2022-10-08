@@ -4,6 +4,8 @@ $( document ).ready(function() {
     let init_form = $("div.init-room");
     let tictactoe_board = $("#tictac_board");
 
+
+
     // Board logic
     $("input.cell").click((e) => {
         let user_char = $('#user_char').val().toLowerCase();
@@ -57,6 +59,7 @@ $( document ).ready(function() {
             }
         }
 
+        // create room ajax call
         if (input_value && field_type === 'create_room') {
             let request = $.ajax({
                 method: "POST",
@@ -71,11 +74,11 @@ $( document ).ready(function() {
                     // return error result (duplicate secret word)
                     err_create.text(result.error);
                 } else {
-                    // handle setting up new game room (add query params to current path, remove overhang form)
+                    // handle setting up new game room (add query params to current path, remove overhang form, show board)
                     let newurl = window.location.protocol +
                         "//" +
                         window.location.host + window.location.pathname +
-                        "?room=" +
+                        "?room_id=" +
                         result.id +
                         "&user_id=" +
                         result.user_one_id;
@@ -92,6 +95,7 @@ $( document ).ready(function() {
             });
         }
 
+        // join room ajax call
         if (input_value && field_type === 'join_room') {
             let request = $.ajax({
                 method: "POST",
@@ -106,11 +110,11 @@ $( document ).ready(function() {
                     // return error result (duplicate secret word)
                     err_join.text(result.error);
                 } else {
-                    // handle setting up new game room (add query params to current path, remove overhang form)
+                    // handle setting up new game room (add query params to current path, remove overhang form, show board)
                     let newurl = window.location.protocol +
                         "//" +
                         window.location.host + window.location.pathname +
-                        "?room=" +
+                        "?room_id=" +
                         result.id +
                         "&user_id=" +
                         result.user_two_id;
@@ -126,5 +130,6 @@ $( document ).ready(function() {
                 alert("Request Failed:" + status);
             });
         }
+
     })
 });
