@@ -40,14 +40,14 @@ $board_array = [
                     echo "<input id='game_room' type='hidden' value=''>";
                     echo "<input id='user_id' type='hidden' value=''>";
 
-                    for($id = 1; $id < 10; $id++){
-                        if( $id === 1 || $id === 4 || $id == 7){
+                    for($id = 0; $id < 9; $id++){
+                        if( $id === 0 || $id === 3 || $id == 6){
                             echo "<tr>";
                         }
 
                         echo "<td><input class='cell' autocomplete='false' type='text' readonly maxlength='1' name='$id' id='$id'></td>";
 
-                        if( $id === 3 || $id === 6 || $id == 9){
+                        if( $id === 2 || $id === 5 || $id == 8){
                             echo "</tr>";
                         }
                     }
@@ -87,11 +87,15 @@ $board_array = [
 
 <?php
 // crappy way to get some user data back if page is refreshed unexpectedly...
-// maybe thinking about savin remote ip in db so I can refer to that incase the url gets wiped and a user re joins an open/unfinshed game
+// maybe thinking about saving remote ip *no good public facing ip is the same for all people on a network*
+// cookie with user id in db so I can refer to that incase the url gets wiped and a user re joins an open/unfinshed game
 if (isset($_GET['room_id']) && isset($_GET['user_id'])){
     ?>
     <script>
         $( document ).ready(function() {
+            let board_inputs = $("#tictac_board input[type='text']");
+            let init_form = $("div.init-room");
+            let tictactoe_board = $("#tictac_board");
 
             reconnect('<?php echo $_GET['room_id']; ?>', '<?php echo $_GET['user_id']; ?>');
 
@@ -110,10 +114,10 @@ if (isset($_GET['room_id']) && isset($_GET['user_id'])){
                         alert(result.error);
                     } else {
                         // handle setting up new game room (remove overhang form, show board)
-
+                        parse_board(JSON.parse(result.table_data), board_inputs);
                         $('#user_char').val(result.char);
-                        $("div.init-room").hide();
-                        $("#tictac_board").removeClass("d-invisible");
+                        init_form.hide();
+                        tictactoe_board.removeClass("d-invisible");
                     }
 
                 });
@@ -121,6 +125,27 @@ if (isset($_GET['room_id']) && isset($_GET['user_id'])){
                 request.fail( function (iqXHR, status) {
                     alert("Request Failed:" + status);
                 });
+            }
+
+            function parse_board(obj, board){
+                for (let key in obj) {
+                    if (obj.hasOwnProperty(key)) {
+
+                        if (obj[key] === null){
+                            $(board[key]).val('');
+                        }
+
+                        if (obj[key] === 0){
+                            $(board[key]).val('o');
+                        }
+
+                        if (obj[key] === 1){
+                            $(board[key]).val('x');
+                        }
+
+                        console.log(obj[key]);
+                    }
+                }
             }
         });
     </script>

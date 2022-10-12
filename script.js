@@ -3,6 +3,7 @@ $( document ).ready(function() {
     const err_join = $(".init-room .err.no-room p");
     let init_form = $("div.init-room");
     let tictactoe_board = $("#tictac_board");
+    let board_inputs = $("#tictac_board input[type='text']");
 
 
 
@@ -75,17 +76,7 @@ $( document ).ready(function() {
                     err_create.text(result.error);
                 } else {
                     // handle setting up new game room (add query params to current path, remove overhang form, show board)
-                    let newurl = window.location.protocol +
-                        "//" +
-                        window.location.host + window.location.pathname +
-                        "?room_id=" +
-                        result.id +
-                        "&user_id=" +
-                        result.user_one_id;
-                    window.history.pushState({path:newurl},'',newurl);
-                    $('#user_char').val(result.char);
-                    init_form.hide();
-                    tictactoe_board.removeClass("d-invisible");
+                    show_board(result, true);
                 }
 
             });
@@ -111,17 +102,7 @@ $( document ).ready(function() {
                     err_join.text(result.error);
                 } else {
                     // handle setting up new game room (add query params to current path, remove overhang form, show board)
-                    let newurl = window.location.protocol +
-                        "//" +
-                        window.location.host + window.location.pathname +
-                        "?room_id=" +
-                        result.id +
-                        "&user_id=" +
-                        result.user_two_id;
-                    window.history.pushState({path:newurl},'',newurl);
-                    $('#user_char').val(result.char);
-                    init_form.hide();
-                    tictactoe_board.removeClass("d-invisible");
+                    show_board(result, false);
                 }
 
             });
@@ -132,4 +113,41 @@ $( document ).ready(function() {
         }
 
     })
+
+    function parse_board(obj, board){
+        for (let key in obj) {
+            if (obj.hasOwnProperty(key)) {
+
+                if (obj[key] === null){
+                    $(board[key]).val('');
+                }
+
+                if (obj[key] === 0){
+                    $(board[key]).val('o');
+                }
+
+                if (obj[key] === 1){
+                    $(board[key]).val('x');
+                }
+
+                console.log(obj[key]);
+            }
+        }
+    }
+
+    function show_board(result, userOne){
+        let user_id = userOne ? result.user_one_id : result.user_two_id;
+        let newurl = window.location.protocol +
+            "//" +
+            window.location.host + window.location.pathname +
+            "?room_id=" +
+            result.id +
+            "&user_id=" +
+            user_id;
+        window.history.pushState({path:newurl},'',newurl);
+        parse_board(JSON.parse(result.table_data), board_inputs);
+        $('#user_char').val(result.char);
+        init_form.hide();
+        tictactoe_board.removeClass("d-invisible");
+    }
 });

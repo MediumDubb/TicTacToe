@@ -18,8 +18,8 @@ if ( isset($submission['room_id']) && isset($submission['user_id'])) {
 
 
     if ( $rows['user_one_id'] != null && $rows['user_one_id'] == $submission['user_id'] ){
-        echo json_encode(['char' => 'x']);
-    } elseif( $rows['user_one_id'] != null && $rows['user_two_id'] == $submission['user_id'] ) {
+        echo json_encode($rows += ['char' => 'x']);
+    } elseif( $rows['user_two_id'] != null && $rows['user_two_id'] == $submission['user_id'] ) {
         echo json_encode( $rows += ['char' => 'o'] );
     } else {
         echo json_encode(['error' => 'Data specified not found']);
