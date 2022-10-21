@@ -142,8 +142,6 @@ if (isset($_GET['room_id']) && isset($_GET['user_id'])){
                         if (obj[key] === 1){
                             $(board[key]).val('x');
                         }
-
-                        console.log(obj[key]);
                     }
                 }
             }

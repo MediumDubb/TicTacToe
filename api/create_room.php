@@ -13,7 +13,7 @@ $base_url = $request_info['REQUEST_SCHEME'] . '://' . $request_info['HTTP_HOST']
 
 $join_room_url = $base_url . '/?action=join_room&secret_word=' . $submission['secret_word'];
 
-$table_data = '{"0":null, "1":null, "2":null, "3":null, "4":null, "5":null, "6":null, "7":null, "8":null}';
+$table_data = '[null,null,null,null,null,null,null,null,null]';
 
 $check_room = $dbh->prepare("SELECT COUNT(*) FROM game_room WHERE secret_word ='" . $submission['secret_word']. "'");
 $generate_room = "INSERT INTO game_room (secret_word, user_one_id, table_data, join_url) VALUES (:secret_word, (SELECT UUID()),'" . $table_data ."','" . $join_room_url ."' )";

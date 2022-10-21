@@ -5,16 +5,32 @@ $( document ).ready(function() {
     let tictactoe_board = $("#tictac_board");
     let board_inputs = $("#tictac_board input[type='text']");
 
-
-
-    // Board logic
+    // Board logic *** Update Board ***
     $("input.cell").click((e) => {
         let user_char = $('#user_char').val().toLowerCase();
-
         $(e.target).val(user_char);
-        $("#tictac_board").submit( (e) => {
-            e.preventDefault();
-            let $board_inputs = $("#tictac_board input[type='text']");
+
+        let request = $.ajax({
+            method: "POST",
+            url: 'api/' + 'board_data' + '.php',
+            data: board_update(board_inputs),
+            dataType: 'json'
+        });
+
+        request.done( function ( result ) {
+            console.log('done. ' + result);
+            if ( result.error ){
+                // return error result (duplicate secret word)
+                err_join.text(result.error);
+            } else {
+                // handle setting up new game room (add query params to current path, remove overhang form, show board)
+                show_board(result, false);
+            }
+
+        });
+
+        request.fail( function (iqXHR, status) {
+            alert("Request Failed:" + status);
         });
     });
 
@@ -115,24 +131,36 @@ $( document ).ready(function() {
     })
 
     function parse_board(obj, board){
-        for (let key in obj) {
-            if (obj.hasOwnProperty(key)) {
+        // strange preg replace to make array from string array '[null,null,etc...]'
+        let array = obj.replace(/\[|\]/g,'').split(',')
 
-                if (obj[key] === null){
-                    $(board[key]).val('');
-                }
+        array.forEach( function(board_input, index){
+            if (board_input === 'null'){
+                $(board[index]).val('');
+            }
 
-                if (obj[key] === 0){
-                    $(board[key]).val('o');
-                }
+            if (board_input === '0'){
+                $(board[index]).val('o');
+            }
 
-                if (obj[key] === 1){
-                    $(board[key]).val('x');
-                }
+            if (board_input === '1'){
+                $(board[index]).val('x');
+            }
+        })
+    }
 
-                console.log(obj[key]);
+    function board_update(board, room_id){
+        let i = 0;
+        let js_obj = {};
+        for (let key in board) {
+            if (board.hasOwnProperty(key) && i < 9) {
+                // make object to send via ajax
+                js_obj[i] = board[key].value;
+                i++;
             }
         }
+
+        return {board_data: js_obj, room_id: 1, user_id: 1};
     }
 
     function show_board(result, userOne){
@@ -145,8 +173,10 @@ $( document ).ready(function() {
             "&user_id=" +
             user_id;
         window.history.pushState({path:newurl},'',newurl);
-        parse_board(JSON.parse(result.table_data), board_inputs);
+        parse_board(result.table_data, board_inputs);
         $('#user_char').val(result.char);
+        $('#game_room').val(result.id);
+        $('#user_id').val(user_id);
         init_form.hide();
         tictactoe_board.removeClass("d-invisible");
     }
