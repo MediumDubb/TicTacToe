@@ -7,7 +7,7 @@ require_once('../database/connect.php');
 
 $submission = $_REQUEST;
 
-$grab_room_users = $dbh->prepare("SELECT user_one_id, user_two_id, table_data FROM game_room WHERE id ='" . $submission['room_id']. "'");
+$grab_room_users = $dbh->prepare("SELECT id, user_one_id, user_two_id, table_data FROM game_room WHERE id ='" . $submission['room_id']. "'");
 
 if ( isset($submission['room_id']) && isset($submission['user_id'])) {
 

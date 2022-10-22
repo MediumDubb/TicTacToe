@@ -37,7 +37,7 @@ $board_array = [
                     <?php
 
                     echo "<input id='user_char' type='hidden' value=''>";
-                    echo "<input id='game_room' type='hidden' value=''>";
+                    echo "<input id='room_id' type='hidden' value=''>";
                     echo "<input id='user_id' type='hidden' value=''>";
 
                     for($id = 0; $id < 9; $id++){
@@ -116,6 +116,8 @@ if (isset($_GET['room_id']) && isset($_GET['user_id'])){
                         // handle setting up new game room (remove overhang form, show board)
                         parse_board(JSON.parse(result.table_data), board_inputs);
                         $('#user_char').val(result.char);
+                        $("#room_id").val(result.id);
+                        $("#user_id").val(user_id);
                         init_form.hide();
                         tictactoe_board.removeClass("d-invisible");
                     }
@@ -150,6 +152,8 @@ if (isset($_GET['room_id']) && isset($_GET['user_id'])){
     <?php
 }
 ?>
+<footer>
 
+</footer>
 </body>
 </html>

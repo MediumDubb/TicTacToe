@@ -8,30 +8,38 @@ $( document ).ready(function() {
     // Board logic *** Update Board ***
     $("input.cell").click((e) => {
         let user_char = $('#user_char').val().toLowerCase();
-        $(e.target).val(user_char);
+        let room_id = $("#room_id").val();
+        let user_id = $("#user_id").val();
 
-        let request = $.ajax({
-            method: "POST",
-            url: 'api/' + 'board_data' + '.php',
-            data: board_update(board_inputs),
-            dataType: 'json'
-        });
+        if ( $(e.target).val() === '' ){
+            $(e.target).val(user_char);
+            let request = $.ajax({
+                method: "POST",
+                url: 'api/' + 'board_data' + '.php',
+                data: board_update(board_inputs, room_id, user_id),
+                dataType: 'json'
+            });
 
-        request.done( function ( result ) {
-            console.log('done. ' + result);
-            if ( result.error ){
-                // return error result (duplicate secret word)
-                err_join.text(result.error);
-            } else {
-                // handle setting up new game room (add query params to current path, remove overhang form, show board)
-                show_board(result, false);
-            }
+            request.done( function ( result ) {
+                console.log('done. ' + result);
+                if ( result.error ){
+                    // return error result (duplicate secret word)
+                    err_join.text(result.error);
+                } else {
+                    // handle setting up new game room (add query params to current path, remove overhang form, show board)
+                    parse_board(result.table_data, board_inputs);
+                    $('#user_char').val(result.char);
+                    $("#room_id").val(result.id);
+                    $("#user_id").val(result.user_id);
+                }
 
-        });
+            });
 
-        request.fail( function (iqXHR, status) {
-            alert("Request Failed:" + status);
-        });
+            request.fail( function (iqXHR, status) {
+                alert("Request Failed:" + status);
+            });
+        }
+
     });
 
     // init form create/join change submit button text
@@ -149,7 +157,7 @@ $( document ).ready(function() {
         })
     }
 
-    function board_update(board, room_id){
+    function board_update(board, room_id, user_id){
         let i = 0;
         let js_obj = {};
         for (let key in board) {
@@ -160,7 +168,7 @@ $( document ).ready(function() {
             }
         }
 
-        return {board_data: js_obj, room_id: 1, user_id: 1};
+        return {board_data: js_obj, room_id: room_id, user_id: user_id};
     }
 
     function show_board(result, userOne){
@@ -175,8 +183,8 @@ $( document ).ready(function() {
         window.history.pushState({path:newurl},'',newurl);
         parse_board(result.table_data, board_inputs);
         $('#user_char').val(result.char);
-        $('#game_room').val(result.id);
-        $('#user_id').val(user_id);
+        $("#room_id").val(result.id);
+        $("#user_id").val(user_id);
         init_form.hide();
         tictactoe_board.removeClass("d-invisible");
     }
