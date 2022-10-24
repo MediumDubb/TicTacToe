@@ -5,11 +5,6 @@ $( document ).ready(function() {
     let tictactoe_board = $("#tictac_board");
     let board_inputs = $("#tictac_board input[type='text']");
 
-    // Board logic *** Update Board ***
-    $("input.cell").click((e) => {
-        update_board(e)
-    });
-
     // init form create/join change submit button text
     $("#init-room-form input[type='text']").click(function (e) {
         init_room_inputs(e)
@@ -19,6 +14,15 @@ $( document ).ready(function() {
     $("#init-room-form").submit((e) => {
         create_room_or_join(e);
     })
+
+    // Board logic *** Update Board ***
+    $("input.cell").click((e) => {
+        update_board(e)
+    });
+
+    // refresh();
+
+    reconnect();
 
     function init_room_inputs(event) {
         let buttonText = event.target.labels[0].outerText;
@@ -111,17 +115,6 @@ $( document ).ready(function() {
                 alert("Request Failed:" + status);
             });
         }
-
-        // code for refreshing board call (1second interval)
-        // window.setInterval(function(){
-        //     let request = $.ajax({
-        //         method: "POST",
-        //         url: 'api/' + 'board_data' + '.php',
-        //         data: board_update(board_inputs, room_id, user_id),
-        //         dataType: 'json'
-        //     });
-        // }, 1000);
-
     }
 
     function update_board(event) {
@@ -179,6 +172,22 @@ $( document ).ready(function() {
         })
     }
 
+    function parse_board_for_reconnect(obj, board){
+        obj.forEach( function(board_input, index){
+            if (board_input === null){
+                $(board[index]).val('');
+            }
+
+            if (board_input === 0){
+                $(board[index]).val('o');
+            }
+
+            if (board_input === 1){
+                $(board[index]).val('x');
+            }
+        })
+    }
+
     function board_update(board, room_id, user_id){
         let i = 0;
         let js_obj = {};
@@ -210,4 +219,68 @@ $( document ).ready(function() {
         init_form.hide();
         tictactoe_board.removeClass("d-invisible");
     }
+
+    function reconnect() {
+        let url = new URL( window.location.href );
+        let searchParams = new URLSearchParams(url.search);
+
+        let room = searchParams.get('room_id');
+        let user = searchParams.get('user_id');
+
+        let request = $.ajax({
+            method: "POST",
+            url: 'api/reconnect.php',
+            data: {'room_id': room, 'user_id': user},
+            dataType: 'json'
+        });
+
+        request.done( function ( result ) {
+            console.log('done. ' + result);
+            if ( result.error ){
+                // return error result (duplicate secret word)
+                alert(result.error);
+            } else {
+                // handle setting up new game room (remove overhang form, show board)
+                parse_board_for_reconnect(JSON.parse(result.table_data), board_inputs);
+                $('#user_char').val(result.char);
+                $("#room_id").val(result.id);
+                $("#user_id").val(user_id);
+                init_form.hide();
+                tictactoe_board.removeClass("d-invisible");
+            }
+
+        });
+
+        request.fail( function (iqXHR, status) {
+            alert("Request Failed:" + status);
+        });
+    }
+
+    // function refresh() {
+    //     // code for refreshing board call (1second interval)
+    //     window.setInterval(function(){
+    //         let request = $.ajax({
+    //             method: "POST",
+    //             url: 'api/' + 'board_data' + '.php',
+    //             data: {'room_id': $("#room_id").val()},
+    //             dataType: 'json'
+    //         });
+    //
+    //         request.done(function (result) {
+    //             console.log('done. ' + result);
+    //             if (result.error) {
+    //                 // return error result (duplicate secret word)
+    //                 err_join.text(result.error);
+    //             } else {
+    //                 // handle setting up new game room (add query params to current path, remove overhang form, show board)
+    //                 parse_board(result.table_data, board_inputs);
+    //             }
+    //
+    //         });
+    //
+    //         request.fail(function (iqXHR, status) {
+    //             alert("Request Failed:" + status);
+    //         });
+    //     }, 1000);
+    // }
 });

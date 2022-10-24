@@ -42,4 +42,4 @@ $grab_room->execute();
 $room = $grab_room->setFetchMode(PDO::FETCH_ASSOC);
 $assoc_array = $grab_room->fetch();
 
-echo json_encode($assoc_array['user_id'] = $submission['user_id']);
+echo json_encode($assoc_array += ['user_id' => $submission['user_id']]);
