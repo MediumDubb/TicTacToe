@@ -7,68 +7,44 @@ $( document ).ready(function() {
 
     // Board logic *** Update Board ***
     $("input.cell").click((e) => {
-        let user_char = $('#user_char').val().toLowerCase();
-        let room_id = $("#room_id").val();
-        let user_id = $("#user_id").val();
-
-        if ( $(e.target).val() === '' ){
-            $(e.target).val(user_char);
-            let request = $.ajax({
-                method: "POST",
-                url: 'api/' + 'board_data' + '.php',
-                data: board_update(board_inputs, room_id, user_id),
-                dataType: 'json'
-            });
-
-            request.done( function ( result ) {
-                console.log('done. ' + result);
-                if ( result.error ){
-                    // return error result (duplicate secret word)
-                    err_join.text(result.error);
-                } else {
-                    // handle setting up new game room (add query params to current path, remove overhang form, show board)
-                    parse_board(result.table_data, board_inputs);
-                    $('#user_char').val(result.char);
-                    $("#room_id").val(result.id);
-                    $("#user_id").val(result.user_id);
-                }
-
-            });
-
-            request.fail( function (iqXHR, status) {
-                alert("Request Failed:" + status);
-            });
-        }
-
+        update_board(e)
     });
 
     // init form create/join change submit button text
-    $("#init-room-form input[type='text']").click( function(e) {
-        let buttonText = e.target.labels[0].outerText;
+    $("#init-room-form input[type='text']").click(function (e) {
+        init_room_inputs(e)
+    })
+
+    // submitting create/join form
+    $("#init-room-form").submit((e) => {
+        create_room_or_join(e);
+    })
+
+    function init_room_inputs(event) {
+        let buttonText = event.target.labels[0].outerText;
 
         $("#init-room-form input[type='submit']").val(buttonText.slice(0, buttonText.indexOf(':')));
         $("#init-room-form input[type='submit']").prop("disabled", false);
 
         // check if the user clicked on the same input after entering a value, if not then reset the form and err msg's
-        if ( $(this).val() === '' ) {
+        if ($(event.target).val() === '') {
             $("#init-room-form")[0].reset();
             err_create.text('');
             err_join.text('');
         }
-    })
+    }
 
-    // submitting create/join form
-    $("#init-room-form").submit( (e) => {
-        e.preventDefault();
-        let elements = e.target.length;
+    function create_room_or_join(event) {
+        event.preventDefault();
+        let elements = event.target.length;
         let field_type = '';
         let input_value = '';
 
         // grab the value of the filled out field and set the field type to the corresponding php file name
         for (let i = 0; i < elements; i++) {
-            if ( $(e.target[i]).val() ) {
+            if ( $(event.target[i]).val() ) {
                 if ( i !== elements - 1 ) {
-                    input_value = $(e.target[i]).val();
+                    input_value = $(event.target[i]).val();
 
                     if ( i === 0){
                         // first input box is for create_room
@@ -119,9 +95,9 @@ $( document ).ready(function() {
                 dataType: 'json'
             });
 
-            request.done( function ( result ) {
+            request.done(function (result) {
                 console.log('done. ' + result);
-                if ( result.error ){
+                if (result.error) {
                     // return error result (duplicate secret word)
                     err_join.text(result.error);
                 } else {
@@ -131,12 +107,58 @@ $( document ).ready(function() {
 
             });
 
-            request.fail( function (iqXHR, status) {
+            request.fail(function (iqXHR, status) {
                 alert("Request Failed:" + status);
             });
         }
 
-    })
+        // code for refreshing board call (1second interval)
+        // window.setInterval(function(){
+        //     let request = $.ajax({
+        //         method: "POST",
+        //         url: 'api/' + 'board_data' + '.php',
+        //         data: board_update(board_inputs, room_id, user_id),
+        //         dataType: 'json'
+        //     });
+        // }, 1000);
+
+    }
+
+    function update_board(event) {
+        let user_char = $('#user_char').val().toLowerCase();
+        let room_id = $("#room_id").val();
+        let user_id = $("#user_id").val();
+
+        if ( $(event.target).val() === '' ){
+            $(event.target).val(user_char);
+
+            let request = $.ajax({
+                method: "POST",
+                url: 'api/' + 'board_data' + '.php',
+                data: board_update(board_inputs, room_id, user_id),
+                dataType: 'json'
+            });
+
+            request.done( function ( result ) {
+                console.log('done. ' + result);
+                if ( result.error ){
+                    // return error result (duplicate secret word)
+                    err_join.text(result.error);
+                } else {
+                    // handle setting up new game room (add query params to current path, remove overhang form, show board)
+                    parse_board(result.table_data, board_inputs);
+                    $('#user_char').val(result.char);
+                    $("#room_id").val(result.id);
+                    $("#user_id").val(result.user_id);
+                }
+
+            });
+
+            request.fail( function (iqXHR, status) {
+                alert("Request Failed:" + status);
+            });
+        }
+    }
 
     function parse_board(obj, board){
         // strange preg replace to make array from string array '[null,null,etc...]'

@@ -11,6 +11,7 @@ $check_room = $dbh->prepare("SELECT COUNT(*) FROM game_room WHERE secret_word ='
 $check_p2_id = $dbh->prepare("SELECT user_two_id FROM game_room WHERE secret_word ='" . $submission['secret_word']. "'");
 $generate_user_two = "UPDATE game_room SET user_two_id = (SELECT UUID()) WHERE secret_word ='" . $submission['secret_word'] . "'";
 $grab_room = $dbh->prepare("SELECT * FROM game_room WHERE secret_word ='" . $submission['secret_word']. "'");
+$get_users = $dbh->prepare("SELECT user_one_id, user_two_id FROM game_room WHERE secret_word ='" . $submission['secret_word']. "'");
 
 if ( isset($submission['secret_word']) ) {
 
@@ -35,6 +36,22 @@ if ( isset($submission['secret_word']) ) {
     } else {
         // generate the room row
         $dbh->prepare($generate_user_two)->execute();
+
+        // get both users (both have been created at this point)
+        $get_users->execute();
+        $users = $get_users->fetch(PDO::FETCH_ASSOC);
+
+        $current_player = null;
+
+        // random player assigned to first move
+        if(mt_rand( 0, 10 ) >= 5 ){
+            $current_player = $users['user_two_id'];
+        } else {
+            $current_player = $users['user_one_id'];
+        }
+        // query for setting current_player
+        $set_current_player = "UPDATE game_room SET current_player = '" . $current_player . "' WHERE secret_word ='" . $submission['secret_word'] . "'";
+        $dbh->prepare($set_current_player)->execute();
 
         // fetch newly created row
         $grab_room->execute();
