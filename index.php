@@ -74,15 +74,6 @@ $board_array = [
         </form>
     </div>
 </div>
-<!--
-    Set up AJAX and an Endpoint for sending game requests to.
-    keep track of board, and refresh page every couple seconds to keep board up to date.
-    Keep some kind of game room ID for keeping track of the players facing one another.\
-
-
-    Check for a win condition or tie condition... somehow
--->
-
 <script src="./script.js"></script>
 
 <footer>
