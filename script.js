@@ -4,6 +4,8 @@ $( document ).ready(function() {
     let init_form = $("div.init-room");
     let tictactoe_board = $("#tictac_board");
     let board_inputs = $("#tictac_board input[type='text']");
+    let url = new URL( window.location.href );
+    let searchParams = new URLSearchParams(url.search);
 
     // init form create/join change submit button text
     $("#init-room-form input[type='text']").click(function (e) {
@@ -20,9 +22,10 @@ $( document ).ready(function() {
         update_board(e)
     });
 
-    // refresh();
-
-    reconnect();
+    // if page refresh();
+    if (searchParams.get('room_id') &&  searchParams.get('user_id')) {
+        reconnect(searchParams.get('room_id'),  searchParams.get('user_id'));
+    }
 
     function init_room_inputs(event) {
         let buttonText = event.target.labels[0].outerText;
@@ -220,13 +223,7 @@ $( document ).ready(function() {
         tictactoe_board.removeClass("d-invisible");
     }
 
-    function reconnect() {
-        let url = new URL( window.location.href );
-        let searchParams = new URLSearchParams(url.search);
-
-        let room = searchParams.get('room_id');
-        let user = searchParams.get('user_id');
-
+    function reconnect(room, user) {
         let request = $.ajax({
             method: "POST",
             url: 'api/reconnect.php',
@@ -244,7 +241,7 @@ $( document ).ready(function() {
                 parse_board_for_reconnect(JSON.parse(result.table_data), board_inputs);
                 $('#user_char').val(result.char);
                 $("#room_id").val(result.id);
-                $("#user_id").val(user_id);
+                $("#user_id").val(user);
                 init_form.hide();
                 tictactoe_board.removeClass("d-invisible");
             }
@@ -256,12 +253,12 @@ $( document ).ready(function() {
         });
     }
 
-    // function refresh() {
+    // function board_update() {
     //     // code for refreshing board call (1second interval)
     //     window.setInterval(function(){
     //         let request = $.ajax({
     //             method: "POST",
-    //             url: 'api/' + 'board_data' + '.php',
+    //             url: 'api/refresh.php',
     //             data: {'room_id': $("#room_id").val()},
     //             dataType: 'json'
     //         });
@@ -281,6 +278,6 @@ $( document ).ready(function() {
     //         request.fail(function (iqXHR, status) {
     //             alert("Request Failed:" + status);
     //         });
-    //     }, 1000);
+    //     }, 60000);
     // }
 });
