@@ -51,6 +51,6 @@ if ( $current_user_info['current_player'] == $submission['user_id'] ) {
 
     echo json_encode($assoc_array += ['user_id' => $submission['user_id']]);
 } else {
-    echo json_encode(['turn' => '0']);
+    echo json_encode(['turn' => '0', 'table_data' => "'". $submission['board_data'] ."'"]);
 }
 

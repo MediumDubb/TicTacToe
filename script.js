@@ -15,6 +15,7 @@ $( document ).ready(function() {
     // submitting create/join form
     $("#init-room-form").submit((e) => {
         create_room_or_join(e);
+        refresh(board_inputs);
     })
 
     // Board logic *** Update Board ***
@@ -25,6 +26,7 @@ $( document ).ready(function() {
     // if page refresh();
     if (searchParams.get('room_id') &&  searchParams.get('user_id')) {
         reconnect(searchParams.get('room_id'),  searchParams.get('user_id'));
+        refresh(board_inputs);
     }
 
     function init_room_inputs(event) {
@@ -75,9 +77,8 @@ $( document ).ready(function() {
                 data: {'secret_word': input_value},
                 dataType: 'json'
             });
-
+            console.log("create room");
             request.done( function ( result ) {
-                console.log('done. ' + result);
                 if ( result.error ){
                     // return error result (duplicate secret word)
                     err_create.text(result.error);
@@ -101,9 +102,8 @@ $( document ).ready(function() {
                 data: {'secret_word': input_value},
                 dataType: 'json'
             });
-
+            console.log("join room");
             request.done(function (result) {
-                console.log('done. ' + result);
                 if (result.error) {
                     // return error result (duplicate secret word)
                     err_join.text(result.error);
@@ -124,6 +124,7 @@ $( document ).ready(function() {
         let user_char = $('#user_char').val().toLowerCase();
         let room_id = $("#room_id").val();
         let user_id = $("#user_id").val();
+        let current_board = $("#tictac_board input[type='text']")
 
         if ( $(event.target).val() === '' ){
             $(event.target).val(user_char);
@@ -131,18 +132,17 @@ $( document ).ready(function() {
             let request = $.ajax({
                 method: "POST",
                 url: 'api/' + 'board_data' + '.php',
-                data: board_update(board_inputs, room_id, user_id),
+                data: board_update(current_board, room_id, user_id),
                 dataType: 'json'
             });
-
+            console.log("update board");
             request.done( function ( result ) {
-                console.log('done. ' + result);
                 if ( result.error ){
                     // return error result (duplicate secret word)
                     err_join.text(result.error);
                 } else {
-                    // handle setting up new game room (add query params to current path, remove overhang form, show board)
-                    parse_board(result.table_data, board_inputs);
+                    console.log(result.table_data)
+                    parse_board(result.table_data, current_board);
                     $('#user_char').val(result.char);
                     $("#room_id").val(result.id);
                     $("#user_id").val(result.user_id);
@@ -158,6 +158,7 @@ $( document ).ready(function() {
 
     function parse_board(obj, board){
         // strange preg replace to make array from string array '[null,null,etc...]'
+        console.log(obj);
         let array = obj.replace(/\[|\]/g,'').split(',')
 
         array.forEach( function(board_input, index){
@@ -230,9 +231,8 @@ $( document ).ready(function() {
             data: {'room_id': room, 'user_id': user},
             dataType: 'json'
         });
-
+        console.log("reconnect");
         request.done( function ( result ) {
-            console.log('done. ' + result);
             if ( result.error ){
                 // return error result (duplicate secret word)
                 alert(result.error);
@@ -253,31 +253,30 @@ $( document ).ready(function() {
         });
     }
 
-    // function board_update() {
-    //     // code for refreshing board call (1second interval)
-    //     window.setInterval(function(){
-    //         let request = $.ajax({
-    //             method: "POST",
-    //             url: 'api/refresh.php',
-    //             data: {'room_id': $("#room_id").val()},
-    //             dataType: 'json'
-    //         });
-    //
-    //         request.done(function (result) {
-    //             console.log('done. ' + result);
-    //             if (result.error) {
-    //                 // return error result (duplicate secret word)
-    //                 err_join.text(result.error);
-    //             } else {
-    //                 // handle setting up new game room (add query params to current path, remove overhang form, show board)
-    //                 parse_board(result.table_data, board_inputs);
-    //             }
-    //
-    //         });
-    //
-    //         request.fail(function (iqXHR, status) {
-    //             alert("Request Failed:" + status);
-    //         });
-    //     }, 60000);
-    // }
+    function refresh(board_inputs) {
+        // code for refreshing board call (1second interval)
+        window.setInterval(function(){
+            let request = $.ajax({
+                method: "POST",
+                url: 'api/refresh.php',
+                data: {'room_id': $("#room_id").val()},
+                dataType: 'json'
+            });
+
+            request.done(function (result) {
+                if (result.error) {
+                    // return error result (duplicate secret word)
+                    err_join.text(result.error);
+                } else {
+                    // handle setting up new game room (add query params to current path, remove overhang form, show board)
+                    parse_board(result.table_data, board_inputs);
+                }
+
+            });
+
+            request.fail(function (iqXHR, status) {
+                alert("Request Failed:" + status);
+            });
+        }, 5000);
+    }
 });
