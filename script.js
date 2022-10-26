@@ -145,6 +145,11 @@ $( document ).ready(function() {
                     console.log(result.table_data)
                     if ( !result.turn ){
                         parse_board(result.table_data, current_board);
+                        if(result.current_player === user_id){
+                            $("#message").text('Your Turn');
+                        } else {
+                            $("#message").text('');
+                        }
                     }
                 }
             });
@@ -271,6 +276,11 @@ $( document ).ready(function() {
                 } else {
                     // handle setting up new game room (add query params to current path, remove overhang form, show board)
                     parse_board(result.table_data, board_inputs);
+                    if(result.current_player === $("#user_id").val()){
+                        $("#message").text('Your Turn');
+                    } else {
+                        $("#message").text('');
+                    }
                 }
 
             });
