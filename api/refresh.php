@@ -7,7 +7,7 @@ require_once('../database/connect.php');
 
 $submission = $_REQUEST;
 
-$grab_room = $dbh->prepare("SELECT id, table_data, current_player, turn_over FROM game_room WHERE id = " . $submission['room_id']);
+$grab_room = $dbh->prepare("SELECT id, table_data, current_player, turn_over, winner_id FROM game_room WHERE id = " . $submission['room_id']);
 
 $grab_room->execute();
 $room = $grab_room->setFetchMode(PDO::FETCH_ASSOC);

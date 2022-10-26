@@ -145,7 +145,9 @@ $( document ).ready(function() {
                     console.log(result.table_data)
                     if ( !result.turn ){
                         parse_board(result.table_data, current_board);
-                        if(result.current_player === user_id){
+                        if (result.winner_id === user_id ){
+                            $("#message").text('You Win!');
+                        } else if (result.current_player === user_id){
                             $("#message").text('Your Turn');
                         } else {
                             $("#message").text('');
@@ -274,15 +276,24 @@ $( document ).ready(function() {
                     // return error result (duplicate secret word)
                     err_join.text(result.error);
                 } else {
+                    let user_id = $("#user_id").val();
                     // handle setting up new game room (add query params to current path, remove overhang form, show board)
                     parse_board(result.table_data, board_inputs);
-                    if(result.current_player === $("#user_id").val()){
-                        $("#message").text('Your Turn');
+
+                    if (result.winner_id == null) {
+                        if (result.current_player === user_id) {
+                            $("#message").text('Your Turn');
+                        } else {
+                            $("#message").text('');
+                        }
                     } else {
-                        $("#message").text('');
+                        if (result.winner_id === user_id) {
+                            $("#message").text('You Win!');
+                        } else {
+                            $("#message").text('You Lose!');
+                        }
                     }
                 }
-
             });
 
             request.fail(function (iqXHR, status) {
