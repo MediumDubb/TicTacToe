@@ -3,7 +3,6 @@ $( document ).ready(function() {
     const err_join = $(".init-room .err.no-room p");
     let init_form = $("div.init-room");
     let tictactoe_board = $("#tictac_board");
-    let board_inputs = $("#tictac_board input[type='text']");
     let url = new URL( window.location.href );
     let searchParams = new URLSearchParams(url.search);
 
@@ -14,8 +13,9 @@ $( document ).ready(function() {
 
     // submitting create/join form
     $("#init-room-form").submit((e) => {
+        let current_board = $("#tictac_board input[type='text']");
         create_room_or_join(e);
-        refresh(board_inputs);
+        refresh(current_board);
     })
 
     // Board logic *** Update Board ***
@@ -25,8 +25,9 @@ $( document ).ready(function() {
 
     // if page refresh();
     if (searchParams.get('room_id') &&  searchParams.get('user_id')) {
+        let current_board = $("#tictac_board input[type='text']");
         reconnect(searchParams.get('room_id'),  searchParams.get('user_id'));
-        refresh(board_inputs);
+        refresh(current_board);
     }
 
     function init_room_inputs(event) {
@@ -135,19 +136,17 @@ $( document ).ready(function() {
                 data: board_update(current_board, room_id, user_id),
                 dataType: 'json'
             });
-            console.log("update board");
+
             request.done( function ( result ) {
                 if ( result.error ){
                     // return error result (duplicate secret word)
                     err_join.text(result.error);
                 } else {
                     console.log(result.table_data)
-                    parse_board(result.table_data, current_board);
-                    $('#user_char').val(result.char);
-                    $("#room_id").val(result.id);
-                    $("#user_id").val(result.user_id);
+                    if ( !result.turn ){
+                        parse_board(result.table_data, current_board);
+                    }
                 }
-
             });
 
             request.fail( function (iqXHR, status) {
@@ -158,7 +157,6 @@ $( document ).ready(function() {
 
     function parse_board(obj, board){
         // strange preg replace to make array from string array '[null,null,etc...]'
-        console.log(obj);
         let array = obj.replace(/\[|\]/g,'').split(',')
 
         array.forEach( function(board_input, index){
@@ -207,6 +205,7 @@ $( document ).ready(function() {
     }
 
     function show_board(result, userOne){
+        let current_board = $("#tictac_board input[type='text']");
         let user_id = userOne ? result.user_one_id : result.user_two_id;
         let newurl = window.location.protocol +
             "//" +
@@ -216,7 +215,7 @@ $( document ).ready(function() {
             "&user_id=" +
             user_id;
         window.history.pushState({path:newurl},'',newurl);
-        parse_board(result.table_data, board_inputs);
+        parse_board(result.table_data, current_board);
         $('#user_char').val(result.char);
         $("#room_id").val(result.id);
         $("#user_id").val(user_id);
@@ -225,6 +224,8 @@ $( document ).ready(function() {
     }
 
     function reconnect(room, user) {
+        let current_board = $("#tictac_board input[type='text']");
+
         let request = $.ajax({
             method: "POST",
             url: 'api/reconnect.php',
@@ -238,7 +239,7 @@ $( document ).ready(function() {
                 alert(result.error);
             } else {
                 // handle setting up new game room (remove overhang form, show board)
-                parse_board_for_reconnect(JSON.parse(result.table_data), board_inputs);
+                parse_board_for_reconnect(JSON.parse(result.table_data), current_board);
                 $('#user_char').val(result.char);
                 $("#room_id").val(result.id);
                 $("#user_id").val(user);
@@ -277,6 +278,6 @@ $( document ).ready(function() {
             request.fail(function (iqXHR, status) {
                 alert("Request Failed:" + status);
             });
-        }, 5000);
+        }, 2000);
     }
 });

@@ -10,17 +10,9 @@ $getCurrentUserInfo = $dbh->prepare("SELECT  user_one_id, user_two_id, current_p
 $getCurrentUserInfo->execute();
 $room = $getCurrentUserInfo->setFetchMode(PDO::FETCH_ASSOC);
 $current_user_info = $getCurrentUserInfo->fetch();
+$board_data = [];
 
-if ( $current_user_info['current_player'] == $submission['user_id'] ) {
-    $board_data = [];
-    $update_player = '';
-
-    if ($current_user_info['current_player'] == $current_user_info['user_one_id']) {
-        $update_player = $current_user_info['user_two_id'];
-    } else {
-        $update_player = $current_user_info['user_one_id'];
-    }
-
+if (isset($submission['board_data']) && !empty($submission['board_data'])){
     foreach ($submission['board_data'] as $board_tile)
     {
         if ($board_tile == "o"){
@@ -36,9 +28,20 @@ if ( $current_user_info['current_player'] == $submission['user_id'] ) {
         }
     }
 
-// Check for a winning play
-
     $board_data = json_encode($board_data);
+}
+
+if ( $current_user_info['current_player'] == $submission['user_id'] ) {
+
+    $update_player = '';
+
+    if ($current_user_info['current_player'] == $current_user_info['user_one_id']) {
+        $update_player = $current_user_info['user_two_id'];
+    } else {
+        $update_player = $current_user_info['user_one_id'];
+    }
+
+// Check for a winning play
 
     $update_board = "UPDATE game_room SET table_data = '" . $board_data . "', current_player = '" . $update_player . "' WHERE id = " . $submission['room_id'];
     $grab_room = $dbh->prepare("SELECT id, table_data, current_player, turn_over FROM game_room WHERE id = " . $submission['room_id']);
@@ -51,6 +54,6 @@ if ( $current_user_info['current_player'] == $submission['user_id'] ) {
 
     echo json_encode($assoc_array += ['user_id' => $submission['user_id']]);
 } else {
-    echo json_encode(['turn' => '0', 'table_data' => "'". $submission['board_data'] ."'"]);
+    echo json_encode(['turn' => '0', 'table_data' => "'". $board_data ."'"]);
 }
 
