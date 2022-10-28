@@ -136,29 +136,29 @@ $( document ).ready(function() {
                 data: board_update(current_board, room_id, user_id),
                 dataType: 'json'
             });
-
-            request.done( function ( result ) {
-                if ( result.error ){
-                    // return error result (duplicate secret word)
-                    err_join.text(result.error);
-                } else {
-                    console.log(result.table_data)
-                    if ( !result.turn ){
-                        parse_board(result.table_data, current_board);
-                        if (result.winner_id === user_id ){
-                            $("#message").text('You Win!');
-                        } else if (result.current_player === user_id){
-                            $("#message").text('Your Turn');
-                        } else {
-                            $("#message").text('');
-                        }
-                    }
-                }
-            });
-
-            request.fail( function (iqXHR, status) {
-                alert("Request Failed:" + status);
-            });
+            // Some sort of bug here, but this code isn't necessary so not using it for now...
+            // request.done( function ( result ) {
+            //     if ( result.error ){
+            //         // return error result (duplicate secret word)
+            //         err_join.text(result.error);
+            //     } else {
+            //         console.log(result.table_data)
+            //         if ( !result.turn ){
+            //             parse_board(result.table_data, current_board);
+            //             if (result.winner_id === user_id ){
+            //                 $("#message").text('You Win!');
+            //             } else if (result.current_player === user_id){
+            //                 $("#message").text('Your Turn');
+            //             } else {
+            //                 $("#message").text('');
+            //             }
+            //         }
+            //     }
+            // });
+            //
+            // request.fail( function (iqXHR, status) {
+            //     alert("Request Failed:" + status);
+            // });
         }
     }
 

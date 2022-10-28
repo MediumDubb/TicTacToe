@@ -27,7 +27,7 @@ $board_array = [
         <div class="menu-wrapper">
             <table class="menu">
                 <tr>
-                    <th class="message"></th>
+                    <th class="message" id="message"></th>
                 </tr>
             </table>
         </div>
