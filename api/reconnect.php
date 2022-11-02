@@ -17,10 +17,13 @@ if( !empty($submission)){
 
         if ( $rows['user_one_id'] != null && $rows['user_one_id'] == $submission['user_id'] ){
             echo json_encode($rows += ['char' => 'x']);
+            exit();
         } elseif( $rows['user_two_id'] != null && $rows['user_two_id'] == $submission['user_id'] ) {
             echo json_encode( $rows += ['char' => 'o'] );
+            exit();
         } else {
             echo json_encode(['error' => 'Data specified not found']);
+            exit();
         }
     }
 }

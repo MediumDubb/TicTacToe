@@ -14,4 +14,5 @@ if( !empty($submission)) {
     $assoc_array = $grab_room->fetch();
 
     echo json_encode($assoc_array);
+    exit();
 }

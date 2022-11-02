@@ -45,6 +45,7 @@ if( !empty($submission)) {
             $assoc_array += ['char' => 'x'];
 
             echo json_encode($assoc_array);
+            exit();
         }
     }
 }

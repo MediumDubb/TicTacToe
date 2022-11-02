@@ -128,16 +128,19 @@ if( !empty($submission)){
         if( $winner === null){
             $assoc_array += ['user_id' => $submission['user_id']];
             echo json_encode($assoc_array);
+            exit();
         } else {
             $update_winner = "UPDATE game_room SET winner_id = '" . $current_user_info['current_player'] . "' WHERE id = " . $submission['room_id'];
             $dbh->prepare($update_winner)->execute();
             $assoc_array += ['user_id' => $submission['user_id']];
             $assoc_array += $winner;
             echo json_encode($assoc_array);
+            exit();
         }
 
     } else {
         echo json_encode(['turn' => '0', 'table_data' => "'". $board_data ."'"]);
+        exit();
     }
 }
 

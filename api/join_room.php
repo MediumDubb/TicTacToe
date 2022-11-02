@@ -60,6 +60,7 @@ if( !empty($submission)) {
             $assoc_array += ['char' => 'o'];
 
             echo json_encode($assoc_array);
+            exit();
         }
     }
 }
