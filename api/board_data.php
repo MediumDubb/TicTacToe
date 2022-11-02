@@ -3,7 +3,6 @@ header("Content-Type: application/json");
 
 require_once('../database/connect.php');
 
-// init game room secret word
 $submission = $_REQUEST;
 
 if( !empty($submission)){
