@@ -3,6 +3,7 @@ header("Content-Type: application/json");
 
 require_once('../database/connect.php');
 
+//refresh board data (every 2 sec)
 $submission = $_REQUEST;
 
 if( !empty($submission)) {
