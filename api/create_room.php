@@ -17,9 +17,16 @@ if( !empty($submission)) {
 
     $table_data = '[null,null,null,null,null,null,null,null,null]';
 
-    $check_room = $dbh->prepare("SELECT COUNT(*) FROM game_room WHERE secret_word ='" . $submission['secret_word'] . "'");
-    $generate_room = "INSERT INTO game_room (secret_word, user_one_id, table_data, join_url) VALUES (:secret_word, (SELECT UUID()),'" . $table_data . "','" . $join_room_url . "' )";
-    $grab_room = $dbh->prepare("SELECT * FROM game_room WHERE secret_word ='" . $submission['secret_word'] . "'");
+    $check_room = $dbh->prepare("SELECT COUNT(*) FROM game_room WHERE secret_word = ?");
+    $check_room->bindParam(1, $submission['secret_word'], PDO::PARAM_STR);
+
+    $generate_room = $dbh->prepare("INSERT INTO game_room (secret_word, user_one_id, table_data, join_url) VALUES ( ?, (SELECT UUID()), ?, ? )");
+    $generate_room->bindParam(1, $submission['secret_word'], PDO::PARAM_STR);
+    $generate_room->bindParam(2, $table_data, PDO::PARAM_STR);
+    $generate_room->bindParam(3, $join_room_url, PDO::PARAM_STR);
+
+    $grab_room = $dbh->prepare("SELECT * FROM game_room WHERE secret_word = ?");
+    $grab_room->bindParam(1, $submission['secret_word'], PDO::PARAM_STR);
 
     if (isset($submission['secret_word'])) {
 
@@ -31,12 +38,9 @@ if( !empty($submission)) {
         if ($rows > 0) {
             echo json_encode(['error' => 'Room Exists']);
         } else {
-            $data = [
-                'secret_word' => $submission['secret_word']
-            ];
 
             // generate the room row
-            $dbh->prepare($generate_room)->execute($data);
+            $generate_room->execute();
 
             // fetch newly created row
             $grab_room->execute();

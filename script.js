@@ -278,7 +278,12 @@ $( document ).ready(function() {
                 } else {
                     let user_id = $("#user_id").val();
                     // handle setting up new game room (add query params to current path, remove overhang form, show board)
-                    parse_board(result.table_data, board_inputs);
+                    if (result !== false){
+                        parse_board(result.table_data, board_inputs);
+                    } else {
+                        console.log('result is: ' + result);
+                    }
+
 
                     if (result.winner_id == null) {
                         if (result.current_player === user_id) {

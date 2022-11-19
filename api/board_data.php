@@ -6,7 +6,8 @@ require_once('../database/connect.php');
 $submission = $_REQUEST;
 
 if( !empty($submission)){
-    $getCurrentUserInfo = $dbh->prepare("SELECT  user_one_id, user_two_id, current_player, winner_id FROM game_room WHERE id = " . $submission['room_id']);
+    $getCurrentUserInfo = $dbh->prepare("SELECT  user_one_id, user_two_id, current_player, winner_id FROM game_room WHERE id = ?");
+    $getCurrentUserInfo->bindParam(1, $submission['room_id'], PDO::PARAM_INT );
     $getCurrentUserInfo->execute();
     $room = $getCurrentUserInfo->setFetchMode(PDO::FETCH_ASSOC);
     $current_user_info = $getCurrentUserInfo->fetch();
@@ -114,24 +115,32 @@ if( !empty($submission)){
 
 // Check for a winning play
 
-        $update_board = "UPDATE game_room SET table_data = '" . $board_data . "', current_player = '" . $update_player . "' WHERE id = " . $submission['room_id'];
-        $grab_room = $dbh->prepare("SELECT id, table_data, current_player FROM game_room WHERE id = " . $submission['room_id']);
+        $update_board = $dbh->prepare("UPDATE game_room SET table_data = ?, current_player = ? WHERE id = ?");
+        $update_board->bindParam(1, $board_data, PDO::PARAM_STR);
+        $update_board->bindParam(2, $update_player, PDO::PARAM_STR);
+        $update_board->bindParam(3, $submission['room_id'], PDO::PARAM_INT);
 
         $dbh->prepare($update_board)->execute();
+
+        $grab_room = $dbh->prepare("SELECT id, table_data, current_player FROM game_room WHERE id = ?");
+        $grab_room->bindParam(1, $submission['room_id'], PDO::PARAM_INT);
 
         $grab_room->execute();
         $room = $grab_room->setFetchMode(PDO::FETCH_ASSOC);
         $assoc_array = $grab_room->fetch();
 
-//        Nothing below here matters atm
+// Nothing below here matters atm
 
         if( $winner === null){
             $assoc_array += ['user_id' => $submission['user_id']];
             echo json_encode($assoc_array);
             exit();
         } else {
-            $update_winner = "UPDATE game_room SET winner_id = '" . $current_user_info['current_player'] . "' WHERE id = " . $submission['room_id'];
-            $dbh->prepare($update_winner)->execute();
+            $update_winner = $dbh->prepare("UPDATE game_room SET winner_id = ? WHERE id = ?");
+            $update_winner->bindParam(1, $current_user_info['current_player'], PDO::PARAM_STR);
+            $update_winner->bindParam(2, $submission['room_id'], PDO::PARAM_INT);
+            $update_winner->execute();
+
             $assoc_array += ['user_id' => $submission['user_id']];
             $assoc_array += $winner;
             echo json_encode($assoc_array);
